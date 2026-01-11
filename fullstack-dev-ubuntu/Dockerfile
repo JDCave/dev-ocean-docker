@@ -29,9 +29,9 @@ ENV PATH="$JAVA_HOME/bin:${PATH}"
 
 
 # ======================
-# Install Maven 3.9.11
+# Install Maven 3.9.12
 # ======================
-ENV MAVEN_VERSION=3.9.11
+ENV MAVEN_VERSION=3.9.12
 ENV MAVEN_HOME=/usr/share/maven
 RUN wget https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -O /tmp/maven.tar.gz \
         && mkdir -p $MAVEN_HOME \

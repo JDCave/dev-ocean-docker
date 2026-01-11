@@ -41,6 +41,7 @@ ENV PATH="$MAVEN_HOME/bin:${PATH}"
 
 # Configure Maven
 RUN mkdir -p /root/.m2
+RUN mkdir -p /root/.m2/repository
 COPY settings.xml /root/.m2/settings.xml
 
 
@@ -62,6 +63,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
         apt install -y nodejs && \
         apt clean && rm -rf /var/lib/apt/lists/*
 
+
+# ======================
+# Install Rust
+# ======================
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+
 # ======================
 # Verify Installations
 # ======================
@@ -73,7 +82,10 @@ RUN git --version && \
         mvn -version && \
         python --version && \
         pip --version && \
-        node -v
+        node -v && \
+        npm -v && \
+        rustc --version && \
+        cargo --version
 
 # Set default work directory
 WORKDIR /workspace

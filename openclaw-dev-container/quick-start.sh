@@ -156,6 +156,14 @@ echo "$VERSION" > "$CURRENT_VERSION_FILE"
 
 echo ""
 echo "🌊 启动容器..."
+
+# 检查并清理已存在的容器
+if docker ps -a --format '{{.Names}}' | grep -q "^openclaw-dev-container$"; then
+    echo "⚠️  检测到已存在的容器，正在清理..."
+    docker-compose down || true
+    echo "✅ 已清理旧容器"
+fi
+
 # docker-compose 会自动使用环境变量 DOCKER_IMAGE_TAG
 docker-compose up -d
 

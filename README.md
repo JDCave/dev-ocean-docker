@@ -145,7 +145,11 @@ dev-ocean-docker/
 │   ├── docker_setup.sh          # 遗留脚本（废弃）
 │   ├── settings.xml             # Maven 设置
 │   └── data/                    # 持久化数据目录（自动创建）
-├── fullstack-dev-ubuntu/        # 其他 Docker 配置（备用）
+├── fullstack-dev-ubuntu/        # 全栈开发环境（详见 README.md）
+│   ├── Dockerfile               # 镜像定义
+│   ├── run.sh                   # 构建脚本
+│   ├── settings.xml             # Maven 配置
+│   └── README.md                # 模块文档
 ├── local_test/                  # 本地测试脚本和数据
 │   └── (包含测试脚本、日志和镜像备份)
 ├── .gitignore

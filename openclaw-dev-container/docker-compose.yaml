@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  openclaw:
+    image: ${DOCKER_IMAGE_TAG:-openclaw-dev-container:latest}
+    container_name: openclaw-dev-container
+    restart: always
+    ports:
+      - "${OPENCLAW_GATEWAY_PORT:-18789}:18789"
+    volumes:
+      - ~/.openclaw:/root/.openclaw
+      - ./data:/root/.openclaw/data  # 持久化数据
+    environment:
+      # 时区
+      - TZ=Asia/Shanghai
+
+      # OpenClaw Gateway 配置
+      - OPENCLAW_GATEWAY_PORT=${OPENCLAW_GATEWAY_PORT:-18789}
+      - OPENCLAW_GATEWAY_BIND=${OPENCLAW_GATEWAY_BIND:-lan}
+
+      # OpenRouter API Key (必需)
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+
+      # 飞书 (Feishu) 配置 (必需)
+      - FEISHU_APP_ID=${FEISHU_APP_ID}
+      - FEISHU_APP_SECRET=${FEISHU_APP_SECRET}
+      - FEISHU_GROUP_IDS=${FEISHU_GROUP_IDS}  # 多个用逗号分隔，如 "oc_xxx,oc_yyy"
+
+      # Notion 配置 (可选)
+      - NOTION_API_KEY=${NOTION_API_KEY}
+      - NOTION_DATABASE_ID=${NOTION_DATABASE_ID}
+
+      # Tavily Search (必需)
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+
+      # 可选：其他 OpenClaw 配置
+      - OPENCLAW_MODEL=${OPENCLAW_MODEL:-openrouter/stepfun/step-3.5-flash:free}
+      - OPENCLAW_WORKSPACE=${OPENCLAW_WORKSPACE:-/root/.openclaw/workspace}
+
+    # 使用 entrypoint 脚本自动配置
+    entrypoint: ["/entrypoint.sh"]
+    command: ["gateway"]
+
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

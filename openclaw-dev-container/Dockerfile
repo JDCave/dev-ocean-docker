@@ -1,14 +1,22 @@
-FROM ubuntu:24.04
+# Dockerfile
+FROM ghcr.io/openclaw/openclaw:latest
 
 LABEL maintainer="Jingdong Chen <magical_kingdom@126.com>"
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV TERM=xterm-256color
+# Development environment variables
+ENV EDITOR=vim
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 
-# Replace Ubuntu mirrors with Aliyun mirrors
-RUN sed -i 's@http://.*archive.ubuntu.com@http://mirrors.aliyun.com@g' /etc/apt/sources.list.d/*.sources && \
-        sed -i 's@http://.*security.ubuntu.com@http://mirrors.aliyun.com@g' /etc/apt/sources.list.d/*.sources || true && \
-        sed -i 's@http://.*archive.ubuntu.com@http://mirrors.aliyun.com@g' /etc/apt/sources.list && \
-        sed -i 's@http://.*security.ubuntu.com@http://mirrors.aliyun.com@g' /etc/apt/sources.list || true
+
+# sudo Root
+USER root
+
+# Use Aliyun mirrors
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources || \
+    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
 
 RUN apt-get -qq update && \
         apt-get -qq -y install gnupg ca-certificates curl wget git unzip tar vim build-essential software-properties-common && \
@@ -29,9 +37,9 @@ ENV PATH="$JAVA_HOME/bin:${PATH}"
 
 
 # ======================
-# Install Maven 3.9.12
+# Install Maven 3.9.14
 # ======================
-ENV MAVEN_VERSION=3.9.12
+ENV MAVEN_VERSION=3.9.14
 ENV MAVEN_HOME=/usr/share/maven
 RUN wget https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -O /tmp/maven.tar.gz \
         && mkdir -p $MAVEN_HOME \
@@ -72,6 +80,31 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 
 
 # ======================
+# Install Go
+# ======================
+ENV GO_VERSION=1.26.1
+RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -O /tmp/go.tar.gz \
+        && tar -C /usr/local -xzf /tmp/go.tar.gz \
+        && rm -f /tmp/go.tar.gz
+ENV PATH="/usr/local/go/bin:${PATH}"
+
+
+# ======================
+# Set Metadata & Labels (Build Args for versioning)
+# ======================
+ARG BUILD_DATE
+ARG VERSION
+ARG REVISION
+
+LABEL org.opencontainers.image.title="OpenClaw Dev Container"
+LABEL org.opencontainers.image.description="Development environment for OpenClaw with auto-configuration"
+LABEL org.opencontainers.image.vendor="OpenClaw Team"
+LABEL org.opencontainers.image.version="${VERSION}"
+LABEL org.opencontainers.image.revision="${REVISION}"
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
+
+
+# ======================
 # Verify Installations
 # ======================
 RUN git --version && \
@@ -81,14 +114,24 @@ RUN git --version && \
         javac -version && \
         mvn -version && \
         python --version && \
+        go version && \
         pip --version && \
         node -v && \
         npm -v && \
         rustc --version && \
         cargo --version
 
+
 # Set default work directory
 WORKDIR /workspace
 
-# Set default shell to bash
-CMD ["/bin/bash"]
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Expose gateway port
+EXPOSE 18789
+
+# Use entrypoint to auto-configure and start
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["gateway"]

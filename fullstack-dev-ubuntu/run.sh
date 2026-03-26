@@ -23,3 +23,6 @@ sudo mount -t drvfs C: /mnt/c -o metadata,uid=1000,gid=1000
 
 # Docker run
 docker run -it --name fullstack-dev-container --restart unless-stopped -v "C:/Users/Jared J D CHEN/.ssh:/root/.ssh" -v "D:/Code:/workspace/code" -p 3000:3000 --user root fullstack-dev-env:v1.0.1
+
+
+apt install -y libwebkit2gtk-4.1-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev

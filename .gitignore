@@ -1,1 +1,27 @@
+# Git Ignore
+
+local_test/
+
+# 环境变量配置（包含敏感信息）
+.env
+
+# Docker 数据
+data/
+docker-compose.override.yml
+
+# IDE
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# 临时文件
+tmp/
+temp/

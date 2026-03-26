@@ -1,317 +1,407 @@
-# OpenClaw Development Container
+# dev-ocean-docker
 
-基于 Docker 的 OpenClaw 开`发环境，支持自动配置和启动。
+A collection of Docker development environments including OpenClaw AI assistant deployment and fullstack development tools.
 
-## ✨ 特性
+## 📋 Overview
 
-- ✅ **一键启动**: 自动配置 all-in-one 环境
-- ✅ **环境变量配置**: 所有敏感信息通过 env 注入，不硬编码
-- ✅ **自动生成配置**: 容器启动时自动创建 `openclaw.json`
-- ✅ **Gateway 自动启动**: 容器运行即服务
-- ✅ **数据持久化**: 配置和数据保存在宿主机
-- ✅ **健康检查**: 自动监控服务状态
-- ✅ **版本管理**: 支持多版本镜像切换
+This repository contains multiple Docker-based development environments:
 
-## 📋 前置要求
+1. **openclaw-dev-container** - Official OpenClaw development container with automatic configuration
+2. **fullstack-dev-ubuntu** - Universal fullstack development environment with modern toolchains
+
+---
+
+## 🚀 Quick Start
+
+### openclaw-dev-container (OpenClaw AI Assistant)
+
+The OpenClaw development container provides an all-in-one environment for deploying AI assistant services with Feishu, Notion, and more integrations.
+
+#### Prerequisites
 
 - Docker (20.10+)
 - Docker Compose (2.0+)
 
-## 🚀 快速开始
-
-### 1. 配置环境变量
+#### 1. Configure Environment Variables
 
 ```bash
-cd /workspace/code/dev-ocean-docker
+cd /workspace/code/dev-ocean-docker/openclaw-dev-container
 
-# 复制模板（从 openclaw-dev-container 目录）
-cp openclaw-dev-container/.env.example .env
+# Copy template
+cp .env.example .env
 
-# 编辑 .env，填入你的 API Keys
+# Edit .env and fill in your API Keys
 vim .env
 ```
 
-**必需配置项**:
+**Required configuration**:
 - `OPENROUTER_API_KEY` - OpenRouter API key
 - `TAVILY_API_KEY` - Tavily Search API key
-- `FEISHU_APP_ID` - 飞书应用 ID
-- `FEISHU_APP_SECRET` - 飞书应用 Secret
-- `FEISHU_GROUP_IDS` - 允许的群组 ID（多个用逗号分隔）
+- `FEISHU_APP_ID` - Feishu App ID
+- `FEISHU_APP_SECRET` - Feishu App Secret
+- `FEISHU_GROUP_IDS` - Allowed group IDs (comma-separated)
 
-**可选配置**:
+**Optional configuration**:
 - `NOTION_API_KEY` - Notion Integration token
-- `NOTION_DATABASE_ID` - Notion Database ID（用于笔记存储）
-- `OPENCLAW_GATEWAY_PORT` - 网关端口（默认 18789）
-- `OPENCLAW_MODEL` - 默认模型（默认 step-3.5-flash）
-- `OPENCLAW_WORKSPACE` - 工作空间路径（默认 /root/.openclaw/workspace）
+- `NOTION_DATABASE_ID` - Notion Database ID (for notes storage)
+- `OPENCLAW_GATEWAY_PORT` - Gateway port (default: 18789)
+- `OPENCLAW_MODEL` - Default model (default: step-3.5-flash)
+- `OPENCLAW_WORKSPACE` - Workspace path (default: /root/.openclaw/workspace)
 
-### 2. 启动容器
+#### 2. Start Container
 
 ```bash
-# 进入容器目录
-cd /workspace/code/dev-ocean-docker/openclaw-dev-container
-
-# 使用 quick-start 脚本（推荐）
+# Using quick-start script (recommended)
 ./quick-start.sh
 
-# 使用特定版本
+# Use specific version
 ./quick-start.sh --version 1.0.1
 
-# 强制重建镜像
+# Force rebuild image
 ./quick-start.sh --build --version 1.0.1
 
-# 查看帮助
+# Show help
 ./quick-start.sh --help
 ```
 
-### 3. 验证启动
+#### 3. Verify Startup
 
 ```bash
-# 查看日志
+# View logs
 docker-compose logs -f openclaw
 
-# 健康检查
+# Health check
 curl http://localhost:18789/health
 
-# 查看状态
+# Check status
 docker-compose exec openclaw openclaw gateway status
 ```
 
-## 🔧 配置说明
+---
 
-### 环境变量详解
+### fullstack-dev-ubuntu (Universal Development Environment)
 
-| 变量名 | 必需 | 默认值 | 说明 |
-|--------|------|--------|------|
-| `OPENROUTER_API_KEY` | ✅ | - | OpenRouter API key，用于 LLM 访问 |
-| `TAVILY_API_KEY` | ✅ | - | Tavily Search API key，用于网络搜索 |
-| `FEISHU_APP_ID` | ✅ | - | 飞书应用 ID |
-| `FEISHU_APP_SECRET` | ✅ | - | 飞书应用 Secret |
-| `FEISHU_GROUP_IDS` | ✅ | - | 允许的群组 ID，逗号分隔 |
-| `NOTION_API_KEY` | ❌ | - | Notion Integration token（如不需要可留空） |
-| `NOTION_DATABASE_ID` | ❌ | - | Notion Database ID（如不需要可留空） |
-| `OPENCLAW_GATEWAY_PORT` | ❌ | 18789 | Gateway 监听端口 |
-| `OPENCLAW_GATEWAY_BIND` | ❌ | lan | 绑定地址（lan/localhost/all） |
-| `OPENCLAW_MODEL` | ❌ | step-3.5-flash | 默认模型 ID |
-| `OPENCLAW_WORKSPACE` | ❌ | /root/.openclaw/workspace | 工作空间路径 |
+A complete fullstack development environment with modern toolchains for multi-language development.
 
-**版本控制变量**:
-- `DOCKER_IMAGE_TAG` - 指定镜像标签（如 `openclaw-dev-container:1.0.1`），quick-start.sh 会自动设置
+#### Key Features
 
-### Feishu 配置步骤
+- **Multi-language support**: Java 25, Python 3, Node 24, Rust
+- **Complete toolchain**: Maven 3.9.12, npm/yarn, cargo
+- **Optimized mirrors**: Aliyun mirrors for faster downloads in China
+- **Ready-to-use**: All tools pre-installed, no additional setup needed
 
-1. 访问 [飞书开放平台](https://open.feishu.cn/)
-2. 创建「企业内部应用」
-3. 在「凭证与基础信息」获取：
-   - App ID
-   - App Secret
-4. 在「权限管理」添加以下权限：
-   - 接收消息 (im.message)
-   - 发送消息 (im.message)
-5. 在「订阅事件」添加：
-   - `im.message.message_read`
-   - `im.message.message_created`
-6. 在「机器人」页面安装应用到指定群组
-7. 复制群组 ID（从群组设置页 URL 中获取）
+#### Included Tools
 
-### Notion 配置步骤（可选）
+| Language/Tool | Version | Purpose |
+|--------------|---------|---------|
+| Java (OpenJDK Zulu) | 25 | Enterprise backend development |
+| Maven | 3.9.12 | Build and dependency management |
+| Python | 3.x | Data science / Web backend |
+| Node.js | 24.x | Frontend / Full-stack development |
+| Rust | latest | Systems programming / WASM |
+| Others | git, curl, vim... | Daily development tools |
 
-1. 访问 [Notion Integrations](https://www.notion.so/my-integrations)
-2. 创建新 Integration，记录 API Key
-3. 在 Notion 中创建 Database，记录 Database ID
-4. 在 Database 页面：`...` → `Add connections` → 选择你的 Integration
-5. 赋予 `Can edit` 权限
+#### Quick Start
 
-### Tavily 配置步骤
+1. **Build Image**
+   ```bash
+   cd /workspace/code/dev-ocean-docker/fullstack-dev-ubuntu
 
-1. 访问 [Tavily](https://tavily.com) 并注册
-2. 在 Dashboard 获取 API Key
-3. 添加到 `.env` 文件
+   # Using run script
+   ./run.sh  # builds and saves to tar (optional upload)
 
-## 📁 文件结构
+   # Or using Docker directly
+   docker build -t fullstack-dev-env:v1.0.1 .
+   ```
+
+2. **Run Container**
+   ```bash
+   # Interactive mode (recommended for development)
+   docker run -it \
+     --name fullstack-dev-container \
+     -v "$HOME/code:/workspace/code" \
+     -v "$HOME/.ssh:/root/.ssh" \
+     -p 3000:3000 \
+     fullstack-dev-env:v1.0.1
+
+   # Background mode
+   docker run -d \
+     --name fullstack-dev \
+     -v "$HOME/code:/workspace/code" \
+     fullstack-dev-env:v1.0.1
+   ```
+
+3. **Verify Installation**
+   ```bash
+   java -version
+   mvn -version
+   python --version
+   node -v
+   rustc --version
+   ```
+
+#### Typical Use Cases
+
+**Java/Spring Project**
+```bash
+cd /workspace/code/spring-app
+mvn clean install
+mvn spring-boot:run
+```
+
+**Python Project**
+```bash
+cd /workspace/code/python-api
+pip install -r requirements.txt
+python app.py
+```
+
+**Node.js Project**
+```bash
+cd /workspace/code/react-app
+npm install
+npm start
+```
+
+**Multi-language Projects**
+```
+/workspace/code/
+├── backend-spring/   # Java
+├── frontend-vue/     # Node.js
+├── service-python/   # Python
+└── tool-rust/        # Rust
+```
+
+#### Volume Mount Recommendations
+
+```bash
+# Code directory
+-v "/path/to/code:/workspace/code"
+
+# SSH keys (for Git operations)
+-v "$HOME/.ssh:/root/.ssh"
+
+# Maven local repository (cache acceleration)
+-v "$HOME/.m2:/root/.m2"
+```
+
+---
+
+## 📁 Project Structure
 
 ```
 dev-ocean-docker/
-├── README.md                    # 主文档（使用说明）
-├── CHANGES.md                   # 更新日志
-├── LEGACY_SCRIPTS.md            # 废弃脚本说明
-├── openclaw-dev-container/      # Docker 镜像目录
-│   ├── Dockerfile               # 镜像定义
-│   ├── docker-compose.yaml      # 服务编排
-│   ├── entrypoint.sh            # 容器启动脚本
-│   ├── .env.example             # 环境变量模板
-│   ├── quick-start.sh           # 一键启动脚本
-│   ├── docker_run.sh            # 遗留脚本（废弃）
-│   ├── docker_setup.sh          # 遗留脚本（废弃）
-│   ├── settings.xml             # Maven 设置
-│   └── data/                    # 持久化数据目录（自动创建）
-├── fullstack-dev-ubuntu/        # 全栈开发环境（详见 README.md）
-│   ├── Dockerfile               # 镜像定义
-│   ├── run.sh                   # 构建脚本
-│   ├── settings.xml             # Maven 配置
-│   └── README.md                # 模块文档
-├── local_test/                  # 本地测试脚本和数据
-│   └── (包含测试脚本、日志和镜像备份)
+├── README.md                    # Main documentation (this file)
+├── CHANGES.md                   # Changelog
+├── LEGACY_SCRIPTS.md            # Deprecated scripts documentation
+├── openclaw-dev-container/      # OpenClaw Docker image
+│   ├── Dockerfile               # Image definition
+│   ├── docker-compose.yaml      # Service orchestration
+│   ├── entrypoint.sh            # Container startup script
+│   ├── .env.example             # Environment variables template
+│   ├── quick-start.sh           # One-click startup script
+│   ├── docker_run.sh            # Legacy script (deprecated)
+│   ├── docker_setup.sh          # Legacy script (deprecated)
+│   ├── settings.xml             # Maven configuration
+│   └── data/                    # Persistent data directory (auto-created)
+├── fullstack-dev-ubuntu/        # Fullstack development environment
+│   ├── Dockerfile               # Image definition
+│   ├── run.sh                   # Build script
+│   └── settings.xml             # Maven configuration (Aliyun mirrors)
+├── local_test/                  # Local test scripts and data
+│   └── (test scripts, logs, image backups)
 ├── .gitignore
 └── docker-registry.json
 ```
 
-## 🔄 版本管理
+---
 
-### 查看当前版本
+## 🔧 Configuration Reference
+
+### Environment Variables (openclaw-dev-container)
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `OPENROUTER_API_KEY` | ✅ | - | OpenRouter API key for LLM access |
+| `TAVILY_API_KEY` | ✅ | - | Tavily Search API key for web search |
+| `FEISHU_APP_ID` | ✅ | - | Feishu application ID |
+| `FEISHU_APP_SECRET` | ✅ | - | Feishu application secret |
+| `FEISHU_GROUP_IDS` | ✅ | - | Allowed group IDs (comma-separated) |
+| `NOTION_API_KEY` | ❌ | - | Notion Integration token (optional) |
+| `NOTION_DATABASE_ID` | ❌ | - | Notion Database ID (optional) |
+| `OPENCLAW_GATEWAY_PORT` | ❌ | 18789 | Gateway listening port |
+| `OPENCLAW_GATEWAY_BIND` | ❌ | lan | Bind address (lan/localhost/all) |
+| `OPENCLAW_MODEL` | ❌ | step-3.5-flash | Default model ID |
+| `OPENCLAW_WORKSPACE` | ❌ | /root/.openclaw/workspace | Workspace path |
+
+---
+
+## 📖 Module Documentation
+
+### openclaw-dev-container
+
+**Purpose**: Quickly deploy OpenClaw gateway service for development, testing, and production.
+
+**Key Features**:
+- Automatic config generation from environment variables
+- Gateway auto-start (foreground mode for Docker)
+- Data persistence (config, workspace, logs)
+- Version management (multi-tag images)
+- Health check monitoring
+
+**Ports & Services**:
+- Gateway API: `http://localhost:18789`
+- Web UI: `http://localhost:18789` (requires token)
+- SSE Events: `http://localhost:18789/events`
+
+**Data Persistence**:
+- Host `~/.openclaw/` → Container `/root/.openclaw/`
+- Includes configs, workspace data, logs, etc.
+
+**Common Issues**:
+- Config changes not applying: Container's existing `openclaw.json` won't be overwritten; delete it or restart container
+- Port already in use: Change `OPENCLAW_GATEWAY_PORT` in `.env`
+- Not receiving Feishu messages: Check if app is installed in group, verify `FEISHU_GROUP_IDS`, check logs
+
+---
+
+### fullstack-dev-ubuntu
+
+**Purpose**: Unified development environment supporting multi-language fullstack development.
+
+**Base Image**: Ubuntu 24.04 LTS
+
+**Installed Languages & Tools**:
+- Java 25 (OpenJDK Zulu) + Maven 3.9.12
+- Python 3 + pip
+- Node.js 24.x + npm
+- Rust (rustc + cargo)
+- Development tools: git, curl, wget, unzip, tar, vim, build-essential, etc.
+
+**Optimizations**:
+- Aliyun mirror sources for faster package downloads
+- Pre-configured Maven settings.xml with Aliyun mirrors
+- Default workspace: `/workspace`
+
+**Use Cases**:
+- Java/Spring backend development
+- Python/Django/FastAPI services
+- Node.js/React/Vue frontend
+- Rust application development
+- Multi-language hybrid projects
+
+**Image Size**:
+- Base: ~2GB
+- Built: ~2.5GB (including cache)
+- Running container: varies by project dependencies
+
+---
+
+## 🔄 Version Management (openclaw-dev-container)
 
 ```bash
+# Check current version
 cat .current-version
-```
 
-### 启动特定版本
-
-```bash
-# 使用 1.0.1 版本
+# Start specific version
 ./quick-start.sh --version 1.0.1
 
-# 或通过环境变量
-IMAGE_VERSION=1.0.1 ./quick-start.sh
-```
-
-### 构建新版本
-
-1. 修改 `Dockerfile` 或其他文件
-2. 构建并打标签：
-```bash
+# Build new version
 ./quick-start.sh --build --version 1.0.1
 ```
-这会：
-- 构建镜像（latest）
-- 自动标记为 `openclaw-dev-container:1.0.1`
-- 启动容器
 
-### 版本切换流程
+---
 
-```bash
-# 1. 停止当前容器
-docker-compose down
+## 🛠️ Development & Debugging
 
-# 2. 启动新版本
-./quick-start.sh --version 1.0.1
-
-# 3. 验证
-cat .current-version  # 应显示 1.0.1
-```
-
-### 镜像管理命令
+### View Gateway Status
 
 ```bash
-# 列出所有本地镜像
-docker images openclaw-dev-container
-
-# 删除旧版本
-docker rmi openclaw-dev-container:1.0.0
-
-# 推送版本到远程仓库（可选）
-docker tag openclaw-dev-container:1.0.1 your-registry/openclaw-dev-container:1.0.1
-docker push your-registry/openclaw-dev-container:1.0.1
-```
-
-## 🛠️ 开发调试
-
-### 查看 Gateway 状态
-
-```bash
-# 进入容器
+# Enter container
 docker-compose exec openclaw bash
 
-# 查看状态
+# Check gateway status
 openclaw gateway status
 
-# 查看详细日志（容器内）
+# View logs (inside container)
 cat /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log
 
-# 或从宿主机查看（如果挂载了日志）
+# Or from host (if logs are mounted)
 tail -f ~/.openclaw/openclaw-$(date +%Y-%m-%d).log
 ```
 
-### 调试配置文件
+### Debug Configuration
 
 ```bash
-# 检查生成的配置文件
+# Check generated config
 docker-compose exec openclaw cat /root/.openclaw/openclaw.json
 
-# 验证 JSON 格式
+# Validate JSON format
 docker-compose exec openclaw python3 -c "import json; json.load(open('/root/.openclaw/openclaw.json')); print('✅ JSON valid')"
 ```
 
-### 重新配置
+---
 
-如果修改了 `.env` 文件，需要重启容器：
-
-```bash
-docker-compose down
-./quick-start.sh  # 或 docker-compose up -d
-```
-
-注意：已存在的 `openclaw.json` 不会被覆盖（除非删除）。
-
-## 🌐 访问地址
+## 🌐 Access URLs
 
 - **Gateway API**: http://localhost:18789
-- **Control UI**: http://localhost:18789 (如果启用)
+- **Control UI**: http://localhost:18789 (if enabled)
 - **SSE Events**: http://localhost:18789/events
 
-## 🐛 常见问题
+---
 
-### 1. 容器启动失败，提示端口占用
+## 🐛 Troubleshooting
 
-解决：修改 `.env` 中的 `OPENCLAW_GATEWAY_PORT`，或停止占用端口的进程
+### 1. Container fails to start due to port in use
+**Solution**: Change `OPENCLAW_GATEWAY_PORT` in `.env` or stop the process using the port.
 
-### 2. "API key invalid" 错误
+### 2. "API key invalid" error
+Check that API keys in `.env` are copied correctly without extra whitespace.
 
-检查 `.env` 中的 API Key 是否正确复制，没有多余空格
+### 3. Not receiving Feishu messages
+- Verify App ID and Secret are correct
+- Confirm app is installed in the group
+- Ensure `FEISHU_GROUP_IDS` contains correct group IDs
+- Check logs: `docker-compose logs openclaw | grep -i feishu`
 
-### 3. 飞书消息收不到
+### 4. Notion write fails
+- Ensure Notion API Key is from Integration (not user token)
+- Confirm Database is shared with Integration (`Can edit`)
+- Verify `NOTION_DATABASE_ID` is correct
 
-- 确认 App ID 和 Secret 正确
-- 确认应用已安装到群组
-- 确认 `FEISHU_GROUP_IDS` 包含正确的群组 ID
-- 查看日志：`docker-compose logs openclaw | grep -i feishu`
-
-### 4. Notion 无法写入
-
-- 确认 Notion API Key 是 Integration 的（不是用户 token）
-- 确认 Database 已分享给 Integration（Can edit）
-- 确认 `NOTION_DATABASE_ID` 正确
-
-### 5. gateway 无法启动（Docker 环境 systemd 问题）
-
-本容器已针对 Docker 优化，gateway 会直接前台运行。如果看到：
+### 5. Gateway won't start (systemd issue in Docker)
+This container is optimized for Docker; gateway runs in foreground. If you see:
 ```
 Runtime: unknown (systemctl not available)
 ```
-这是正常的，Inside Docker 不支持 systemd。gateway 依然会正常启动。
+This is normal—systemd is not supported inside Docker, but gateway still starts normally.
 
-## 🔒 安全建议
+---
 
-1. **保护 .env 文件**：
+## 🔒 Security Recommendations
+
+1. **Protect .env file**:
    ```bash
    chmod 600 .env
-   # 确保不提交到 Git
-   echo ".env" >> .gitignore
+   echo ".env" >> .gitignore  # Ensure not committed
    ```
 
-2. **定期轮换 API Keys**：
-   - OpenRouter：每 90 天
-   - Tavily：按提供商政策
-   - Feishu：应用凭证长期有效，注意安全
+2. **Rotate API Keys regularly**:
+   - OpenRouter: every 90 days
+   - Tavily: per provider policy
+   - Feishu: long-lived credentials, handle with care
 
-3. **限制容器权限**：
-   - 生产环境考虑使用非 root 用户
-   - 限制网络访问（仅允许出站）
+3. **Restrict container permissions**:
+   - Consider non-root user for production
+   - Limit network access (outbound only if possible)
 
-## 📊 性能调优
+---
 
-### 调整资源限制
+## 📊 Performance Tuning
 
-在 `docker-compose.yaml` 中添加：
+### Adjust Resource Limits
+
+In `docker-compose.yaml`:
 
 ```yaml
 services:
@@ -323,108 +413,35 @@ services:
           memory: 4G
 ```
 
-### 调整 Gateway 端口映射
+### Adjust Gateway Port Mapping
 
 ```yaml
 ports:
-  - "18789:18789"  # 宿主机:容器
+  - "18789:18789"  # host:container
 ```
-
-## 🚢 生产部署建议
-
-1. **使用 production 镜像**：基于 `ghcr.io/openclaw/openclaw:stable`
-2. **配置反向代理**：Nginx/Traefik 处理 HTTPS
-3. **持久化存储**: 使用 Docker volume 或 external storage
-4. **监控告警**: 设置 healthcheck 和日志收集
-5. **密钥管理**: 使用 Docker secrets 或 vault
-
-## 📦 项目模块说明
-
-### 1. openclaw-dev-container
-
-OpenClaw 的官方开发容器镜像，提供一键配置和自动启动的集成环境。
-
-- **用途**: 快速部署 OpenClaw 网关服务，适合开发、测试和生产
-- **核心特性**:
-  - 环境变量自动生成配置文件
-  - Gateway 自动启动
-  - 数据持久化
-  - 版本管理支持
-  - 健康检查
-- **技术栈**: 基于 OpenClaw 官方镜像，预装所有依赖
-- **使用场景**: AI 助手服务部署、Feishu 集成等
-- **文档**: 见本 README 快速开始章节
-
-### 2. fullstack-dev-ubuntu
-
-通用全栈开发环境，提供完整的现代化开发工具链。
-
-- **用途**: 统一的开发环境，支持多语言全栈开发
-- **已安装工具**:
-  - **Java**: OpenJDK 25 (Zulu) + Maven 3.9.12
-  - **Python**: Python3 + pip
-  - **Node.js**: Node 24.x + npm
-  - **Rust**: rustc + cargo
-  - **开发工具**: git, curl, wget, unzip, tar, vim, build-essential 等
-- **基础镜像**: Ubuntu 24.04 LTS
-- **优化**: 使用阿里云镜像源加速，包含 Maven settings.xml 配置
-- **使用场景**:
-  - Java/Spring 后端开发
-  - Python/Django/FastAPI 服务
-  - Node.js/React/Vue 前端
-  - Rust 应用开发
-  - 多语言混合项目
-- **快速启动**:
-  ```bash
-  # 构建镜像
-  cd fullstack-dev-ubuntu
-  ./run.sh
-  ```
-- **工作目录**: `/workspace` (默认)
-- **卷挂载**: 建议挂载代码目录到 `/workspace/code`
-- **端口**: 可根据需要映射（如 3000 用于前端开发服务器）
-
-## 📚 相关资源
-
-- OpenClaw 文档: https://docs.openclaw.ai
-- OpenClaw GitHub: https://github.com/openclaw/openclaw
-- Feishu 开发者文档: https://open.feishu.cn/document
-- Notion API 文档: https://developers.notion.com
-- Tavily API 文档: https://docs.tavily.com
-
-## 🧪 测试与验证
-
-### 基本检查
-
-```bash
-# 检查容器是否在运行
-docker ps | grep openclaw-dev-container
-
-# 进入容器（bash）
-docker exec -it openclaw-dev-container bash
-
-# 执行 OpenClaw 初始化（首次）
-openclaw onboard --install-daemon
-
-# 查看 Gateway 状态
-openclaw gateway status
-
-# 查看应用状态
-openclaw status
-```
-
-### Web UI 访问
-
-Gateway 启动后，可通过浏览器访问：
-
-```
-http://localhost:18789/#token=YOUR_TOKEN
-```
-
-Token 可在 `~/.openclaw/workspace/.auth token` 或通过 `openclaw gateway token` 获取。
 
 ---
 
-**版本**: 1.0.0+  
-**更新**: 2025-03-25  
-**维护**: OpenClaw Team
+## 🚢 Production Deployment Recommendations
+
+1. **Use production image**: Based on `ghcr.io/openclaw/openclaw:stable`
+2. **Configure reverse proxy**: Nginx/Traefik for HTTPS
+3. **Persistent storage**: Use Docker volumes or external storage
+4. **Monitoring & alerts**: Set up healthchecks and log collection
+5. **Secrets management**: Use Docker secrets or vault
+
+---
+
+## 📚 Related Resources
+
+- [OpenClaw Documentation](https://docs.openclaw.ai)
+- [OpenClaw GitHub](https://github.com/openclaw/openclaw)
+- [Feishu Developer Docs](https://open.feishu.cn/document)
+- [Notion API Docs](https://developers.notion.com)
+- [Tavily API Docs](https://docs.tavily.com)
+
+---
+
+**Version**: 1.0.0+  
+**Last Updated**: 2025-03-25  
+**Maintainer**: dev-ocean-docker team

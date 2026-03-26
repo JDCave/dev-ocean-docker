@@ -191,7 +191,8 @@ npm start
 
 ```
 dev-ocean-docker/
-├── README.md                    # Main documentation (this file)
+├── README.md                    # Main documentation (English)
+├── README_zh.md                 # Chinese documentation
 ├── CHANGES.md                   # Changelog
 ├── LEGACY_SCRIPTS.md            # Deprecated scripts documentation
 ├── openclaw-dev-container/      # OpenClaw Docker image

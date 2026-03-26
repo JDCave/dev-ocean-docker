@@ -334,6 +334,52 @@ ports:
 4. **监控告警**: 设置 healthcheck 和日志收集
 5. **密钥管理**: 使用 Docker secrets 或 vault
 
+## 📦 项目模块说明
+
+### 1. openclaw-dev-container
+
+OpenClaw 的官方开发容器镜像，提供一键配置和自动启动的集成环境。
+
+- **用途**: 快速部署 OpenClaw 网关服务，适合开发、测试和生产
+- **核心特性**:
+  - 环境变量自动生成配置文件
+  - Gateway 自动启动
+  - 数据持久化
+  - 版本管理支持
+  - 健康检查
+- **技术栈**: 基于 OpenClaw 官方镜像，预装所有依赖
+- **使用场景**: AI 助手服务部署、Feishu 集成等
+- **文档**: 见本 README 快速开始章节
+
+### 2. fullstack-dev-ubuntu
+
+通用全栈开发环境，提供完整的现代化开发工具链。
+
+- **用途**: 统一的开发环境，支持多语言全栈开发
+- **已安装工具**:
+  - **Java**: OpenJDK 25 (Zulu) + Maven 3.9.12
+  - **Python**: Python3 + pip
+  - **Node.js**: Node 24.x + npm
+  - **Rust**: rustc + cargo
+  - **开发工具**: git, curl, wget, unzip, tar, vim, build-essential 等
+- **基础镜像**: Ubuntu 24.04 LTS
+- **优化**: 使用阿里云镜像源加速，包含 Maven settings.xml 配置
+- **使用场景**:
+  - Java/Spring 后端开发
+  - Python/Django/FastAPI 服务
+  - Node.js/React/Vue 前端
+  - Rust 应用开发
+  - 多语言混合项目
+- **快速启动**:
+  ```bash
+  # 构建镜像
+  cd fullstack-dev-ubuntu
+  ./run.sh
+  ```
+- **工作目录**: `/workspace` (默认)
+- **卷挂载**: 建议挂载代码目录到 `/workspace/code`
+- **端口**: 可根据需要映射（如 3000 用于前端开发服务器）
+
 ## 📚 相关资源
 
 - OpenClaw 文档: https://docs.openclaw.ai

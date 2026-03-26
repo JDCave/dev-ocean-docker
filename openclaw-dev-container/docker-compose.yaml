@@ -1,6 +1,8 @@
-version: '3.8'
 services:
   openclaw:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: ${DOCKER_IMAGE_TAG:-openclaw-dev-container:latest}
     container_name: openclaw-dev-container
     restart: always

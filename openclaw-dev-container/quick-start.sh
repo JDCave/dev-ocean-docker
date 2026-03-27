@@ -157,10 +157,16 @@ echo "$VERSION" > "$CURRENT_VERSION_FILE"
 echo ""
 echo "🌊 启动容器..."
 
-# 检查并清理已存在的容器
+# 检查并清理已存在的容器（更彻底的清理）
 if docker ps -a --format '{{.Names}}' | grep -q "^openclaw-dev-container$"; then
     echo "⚠️  检测到已存在的容器，正在清理..."
-    docker-compose down || true
+    # 停止并移除容器，同时移除网络
+    docker-compose down -v 2>/dev/null || true
+    # 如果还存在，强制删除
+    if docker ps -a --format '{{.Names}}' | grep -q "^openclaw-dev-container$"; then
+        echo "🔧 强制删除残留容器..."
+        docker rm -f openclaw-dev-container 2>/dev/null || true
+    fi
     echo "✅ 已清理旧容器"
 fi
 

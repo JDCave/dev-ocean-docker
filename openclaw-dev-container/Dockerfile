@@ -127,6 +127,8 @@ WORKDIR /workspace
 
 # Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
+# Convert line endings from Windows (CRLF) to Linux (LF)
+RUN sed -i 's/\r$//' /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Expose gateway port

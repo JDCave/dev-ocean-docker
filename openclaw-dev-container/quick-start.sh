@@ -151,6 +151,42 @@ fi
 export DOCKER_IMAGE_TAG="${IMAGE_NAME}:${VERSION}"
 export OPENCLAW_PORT="$OPENCLAW_PORT"
 
+# ===============================================
+# 设置路径映射环境变量
+# ===============================================
+# OpenClaw 配置目录映射：D:/OpenClaw -> /root/.openclaw
+export OPENCLAW_CONFIG_PATH="${OPENCLAW_CONFIG_PATH:-D:/OpenClaw}"
+if [ ! -d "$OPENCLAW_CONFIG_PATH" ]; then
+    echo "⚠️  OpenClaw 配置目录不存在: $OPENCLAW_CONFIG_PATH"
+    echo "   将创建此目录以供 Docker 使用"
+    mkdir -p "$OPENCLAW_CONFIG_PATH"
+fi
+
+# 代码目录映射：D:/Code -> /workspace/code
+export CODE_PATH="${CODE_PATH:-D:/Code}"
+if [ ! -d "$CODE_PATH" ]; then
+    echo "⚠️  代码目录不存在: $CODE_PATH"
+    echo "   将创建此目录以供 Docker 使用"
+    mkdir -p "$CODE_PATH"
+fi
+
+# SSH 密钥目录映射：C:/Users/$USER/.ssh -> /root/.ssh
+if [ -n "$HOME" ]; then
+    export SSH_PATH="${SSH_PATH:-$HOME/.ssh}"
+    if [ ! -d "$SSH_PATH" ]; then
+        echo "⚠️  SSH 目录不存在: $SSH_PATH"
+        echo "   请确保您有 SSH 密钥，或创建该目录"
+    fi
+else
+    # 备用方式：使用 USERPROFILE（Windows 环境变量）
+    export SSH_PATH="${SSH_PATH:-$USERPROFILE/.ssh}"
+fi
+
+echo "✅ 路径映射配置:"
+echo "   - OPENCLAW_CONFIG_PATH=$OPENCLAW_CONFIG_PATH -> /root/.openclaw"
+echo "   - CODE_PATH=$CODE_PATH -> /workspace/code"
+echo "   - SSH_PATH=$SSH_PATH -> /root/.ssh"
+
 # 保存当前版本
 echo "$VERSION" > "$CURRENT_VERSION_FILE"
 
@@ -204,6 +240,11 @@ echo "📋 当前信息:"
 echo "  镜像版本: $VERSION"
 echo "  工作目录: $SCRIPT_DIR"
 echo "  容器名称: openclaw-dev-container"
+echo ""
+echo "📁 路径映射:"
+echo "  主机OpenClaw配置 -> 容器: $OPENCLAW_CONFIG_PATH -> /root/.openclaw"
+echo "  主机代码目录 -> 容器: $CODE_PATH -> /workspace/code"
+echo "  主机SSH目录 -> 容器: $SSH_PATH -> /root/.ssh"
 echo ""
 echo "🛠️  常用命令:"
 echo "  查看日志:    docker-compose logs -f openclaw"

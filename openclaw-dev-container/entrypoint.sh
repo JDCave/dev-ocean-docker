@@ -29,33 +29,35 @@ else
     done
     GROUP_JSON+="]"
 
+    # 计算当前时间（用于占位符替换）
+    CURRENT_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    
     # 生成 openclaw.json
     # 使用 cat + envsubst 避免特殊字符问题
-    cat > "$CONFIG_FILE.template" << 'EOF'
+    cat > "$CONFIG_FILE.template" << EOF
 {
   "meta": {
-    "lastTouchedVersion": "2026.3.13",
-    "lastTouchedAt": "__CURRENT_TIME__"
+    "lastTouchedVersion": "2026.3.23",
+    "lastTouchedAt": "$CURRENT_TIME"
   },
   "wizard": {
-    "lastRunAt": null,
-    "lastRunVersion": null,
-    "lastRunCommand": null,
-    "lastRunMode": null
+    "lastRunAt": "$CURRENT_TIME",
+    "lastRunVersion": "2026.3.23",
+    "lastRunCommand": "gateway",
+    "lastRunMode": "local"
   },
   "auth": {
     "profiles": {
       "openrouter:default": {
         "provider": "openrouter",
-        "mode": "api_key",
-        "apiKey": "__OPENROUTER_API_KEY__"
+        "mode": "api_key"
       }
     }
   },
   "agents": {
     "defaults": {
       "model": {
-        "primary": "__OPENCLAW_MODEL__"
+        "primary": "${OPENCLAW_MODEL:-openrouter/stepfun/step-3.5-flash:free}"
       },
       "models": {
         "openrouter/auto": {
@@ -63,7 +65,7 @@ else
         },
         "openrouter/stepfun/step-3.5-flash:free": {}
       },
-      "workspace": "__OPENCLAW_WORKSPACE__",
+      "workspace": "${OPENCLAW_WORKSPACE:-/root/.openclaw/workspace}",
       "compaction": {
         "mode": "safeguard"
       }
@@ -74,8 +76,7 @@ else
     "web": {
       "search": {
         "enabled": true,
-        "provider": "tavily",
-        "apiKey": "__TAVILY_API_KEY__"
+        "provider": "tavily"
       }
     }
   },
@@ -104,22 +105,22 @@ else
   "channels": {
     "feishu": {
       "enabled": true,
-      "appId": "__FEISHU_APP_ID__",
-      "appSecret": "__FEISHU_APP_SECRET__",
+      "appId": "$FEISHU_APP_ID",
+      "appSecret": "$FEISHU_APP_SECRET",
       "connectionMode": "websocket",
       "domain": "feishu",
       "groupPolicy": "allowlist",
-      "groupAllowFrom": __FEISHU_GROUP_IDS__
+      "groupAllowFrom": $GROUP_JSON
     }
   },
   "gateway": {
-    "port": __OPENCLAW_GATEWAY_PORT__,
+    "port": ${OPENCLAW_GATEWAY_PORT:-18789},
     "mode": "local",
-    "bind": "__OPENCLAW_GATEWAY_BIND__",
+    "bind": "${OPENCLAW_GATEWAY_BIND:-lan}",
     "controlUi": {
       "allowedOrigins": [
-        "http://localhost:__OPENCLAW_GATEWAY_PORT__",
-        "http://127.0.0.1:__OPENCLAW_GATEWAY_PORT__"
+        "http://localhost:${OPENCLAW_GATEWAY_PORT:-18789}",
+        "http://127.0.0.1:${OPENCLAW_GATEWAY_PORT:-18789}"
       ]
     },
     "auth": {
@@ -149,7 +150,7 @@ else
     "entries": {
       "notion": {
         "enabled": true,
-        "apiKey": "__NOTION_API_KEY__"
+        "apiKey": "${NOTION_API_KEY:-}"
       }
     }
   },
@@ -163,20 +164,6 @@ else
   }
 }
 EOF
-
-    # 替换占位符
-    CURRENT_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-    sed -i "s|__CURRENT_TIME__|$CURRENT_TIME|g" "$CONFIG_FILE.template"
-    sed -i "s|__OPENROUTER_API_KEY__|${OPENROUTER_API_KEY}|g" "$CONFIG_FILE.template"
-    sed -i "s|__OPENCLAW_MODEL__|${OPENCLAW_MODEL:-openrouter/stepfun/step-3.5-flash:free}|g" "$CONFIG_FILE.template"
-    sed -i "s|__OPENCLAW_WORKSPACE__|${OPENCLAW_WORKSPACE:-/root/.openclaw/workspace}|g" "$CONFIG_FILE.template"
-    sed -i "s|__TAVILY_API_KEY__|${TAVILY_API_KEY}|g" "$CONFIG_FILE.template"
-    sed -i "s|__FEISHU_APP_ID__|${FEISHU_APP_ID}|g" "$CONFIG_FILE.template"
-    sed -i "s|__FEISHU_APP_SECRET__|${FEISHU_APP_SECRET}|g" "$CONFIG_FILE.template"
-    sed -i "s|__FEISHU_GROUP_IDS__|${GROUP_JSON}|g" "$CONFIG_FILE.template"
-    sed -i "s|__OPENCLAW_GATEWAY_PORT__|${OPENCLAW_GATEWAY_PORT:-18789}|g" "$CONFIG_FILE.template"
-    sed -i "s|__OPENCLAW_GATEWAY_BIND__|${OPENCLAW_GATEWAY_BIND:-lan}|g" "$CONFIG_FILE.template"
-    sed -i "s|__NOTION_API_KEY__|${NOTION_API_KEY:-}|g" "$CONFIG_FILE.template"
 
     # 移动为最终配置
     mv "$CONFIG_FILE.template" "$CONFIG_FILE"
@@ -193,6 +180,17 @@ fi
 
 # 确保数据目录存在
 mkdir -p /root/.openclaw/data
+
+# 配置 SSH 目录权限（如果存在）
+if [ -d "/root/.ssh" ]; then
+    chmod 700 /root/.ssh
+    if [ -f "/root/.ssh/id_rsa" ]; then
+        chmod 600 /root/.ssh/id_rsa
+    fi
+    if [ -f "/root/.ssh/id_rsa.pub" ]; then
+        chmod 644 /root/.ssh/id_rsa.pub
+    fi
+fi
 
 # 设置权限
 chmod 600 /root/.openclaw/openclaw.json

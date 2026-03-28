@@ -1,7 +1,7 @@
 # Dockerfile
 FROM ghcr.io/openclaw/openclaw:latest
 
-LABEL maintainer="Jingdong Chen <magical_kingdom@126.com>"
+LABEL maintainer="maintainer@example.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=xterm-256color
@@ -16,7 +16,7 @@ USER root
 
 # Use Aliyun mirrors
 RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources || \
-    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
+        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
 
 RUN apt-get -qq update && \
         apt-get -qq -y install gnupg ca-certificates curl wget git unzip tar vim build-essential software-properties-common && \

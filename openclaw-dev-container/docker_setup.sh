@@ -1,5 +1,5 @@
 #!/bin/bash
-docker_username="magicalocean"
+docker_username="your_dockerhub_username"
 container_name="openclaw-dev-container"
 version="v1.0.0"
 network_name="openclaw-network"

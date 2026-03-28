@@ -1,6 +1,6 @@
 FROM ubuntu:24.04
 
-LABEL maintainer="Jingdong Chen <magical_kingdom@126.com>"
+LABEL maintainer="maintainer@example.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
 

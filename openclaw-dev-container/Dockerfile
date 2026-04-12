@@ -1,7 +1,7 @@
 # Dockerfile
 FROM ghcr.io/openclaw/openclaw:latest
 
-LABEL maintainer="maintainer@example.com"
+LABEL maintainer="magical_kingdom@126.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=xterm-256color
@@ -68,8 +68,11 @@ ENV PATH="$PATH:/usr/bin"
 # Install Node 24.x
 # ======================
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
-        apt install -y nodejs && \
-        apt clean && rm -rf /var/lib/apt/lists/*
+        apt-get update && \
+        apt-get install -y nodejs && \
+        apt-get -qq -y autoremove && \
+        apt-get -qq -y clean && \
+        rm -rf /var/lib/apt/lists/*
 
 
 # ======================

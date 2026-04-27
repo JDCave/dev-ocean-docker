@@ -18,9 +18,12 @@ USER root
 RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources || \
         sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
 
-RUN apt-get -qq update && \
-        apt-get -qq -y install gnupg ca-certificates curl wget git unzip tar vim build-essential software-properties-common && \
-        rm -rf /var/lib/apt/lists/*
+RUN for i in 1 2 3; do \
+        apt-get update && \
+        apt-get -y --fix-missing install gnupg ca-certificates curl wget git unzip tar vim build-essential software-properties-common && \
+        break || (echo "apt-get failed (attempt $i), retrying in 10s..." && sleep 10); \
+    done && \
+    rm -rf /var/lib/apt/lists/*
 
 # ======================
 # Install OpenJDK 25 (LTS)
@@ -37,9 +40,9 @@ ENV PATH="$JAVA_HOME/bin:${PATH}"
 
 
 # ======================
-# Install Maven 3.9.14
+# Install Maven 3.9.15
 # ======================
-ENV MAVEN_VERSION=3.9.14
+ENV MAVEN_VERSION=3.9.15
 ENV MAVEN_HOME=/usr/share/maven
 RUN wget https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -O /tmp/maven.tar.gz \
         && mkdir -p $MAVEN_HOME \

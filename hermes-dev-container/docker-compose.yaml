@@ -1,0 +1,28 @@
+services:
+  hermes:
+    build:
+      context: ${HERMES_SOURCE_PATH:-D:/Code/opensource/NousResearch/hermes-agent}
+      dockerfile: ${DOCKERFILE_PATH:-D:/Code/my_project/dev-ocean-docker/hermes-dev-container/Dockerfile}
+    image: ${DOCKER_IMAGE_TAG:-hermes-dev-container:latest}
+    container_name: hermes-dev-container
+    restart: always
+    ports:
+      - "${HERMES_GATEWAY_PORT:-8301}:8301"
+      - "${HERMES_DASHBOARD_PORT:-9119}:9119"
+    volumes:
+      # Hermes 数据目录（配置、日志、会话等）
+      - ${HERMES_DATA_PATH:-D:/Hermes}:/opt/data
+      # 用户自定义映射
+      - ${CODE_PATH:-D:/Code}:/workspace/code  # 代码目录
+      - ${SSH_PATH:-$HOME/.ssh}:/root/.ssh  # SSH 密钥目录
+    environment:
+      # 时区
+      - TZ=Asia/Shanghai
+
+      # Hermes 用户映射（gosu 权限降级）
+      - HERMES_UID=${HERMES_UID:-10000}
+      - HERMES_GID=${HERMES_GID:-10000}
+
+    # 使用 Hermes 官方 entrypoint（gosu + tini）
+    entrypoint: ["/usr/bin/tini", "-g", "--", "/opt/hermes/docker/entrypoint.sh"]
+    command: ["gateway", "run"]

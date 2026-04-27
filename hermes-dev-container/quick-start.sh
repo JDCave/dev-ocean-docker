@@ -223,7 +223,7 @@ fi
 
 echo "✅ 路径映射配置:"
 echo "   - HERMES_DATA_PATH=$HERMES_DATA_PATH -> /opt/data"
-echo "   - CODE_PATH=$CODE_PATH -> /workspace/code"
+echo "   - CODE_PATH=$CODE_PATH -> /opt/data/workspace/code"
 echo "   - SSH_PATH=$SSH_PATH -> /root/.ssh"
 
 # 保存当前版本
@@ -269,9 +269,9 @@ echo "  镜像版本: $VERSION"
 echo "  工作目录: $SCRIPT_DIR"
 echo "  容器名称: hermes-dev-container"
 echo ""
-echo "📁 路径映射:"
+echo " 路径映射:"
 echo "  主机Hermes数据 -> 容器: $HERMES_DATA_PATH -> /opt/data"
-echo "  主机代码目录 -> 容器: $CODE_PATH -> /workspace/code"
+echo "  主机代码目录 -> 容器: $CODE_PATH -> /opt/data/workspace/code"
 echo "  主机SSH目录 -> 容器: $SSH_PATH -> /root/.ssh"
 echo ""
 echo "🛠️  常用命令:"

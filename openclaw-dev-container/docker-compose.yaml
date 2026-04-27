@@ -12,7 +12,7 @@ services:
       # 将整个 OpenClaw 配置目录映射到本地
       - ${OPENCLAW_CONFIG_PATH:-D:/OpenClaw}:/root/.openclaw
       # 用户自定义映射
-      - ${CODE_PATH:-D:/Code}:/workspace/code  # 代码目录
+      - ${CODE_PATH:-D:/Code}:/root/.openclaw/workspace/code  # 代码目录
       - ${SSH_PATH:-$HOME/.ssh}:/root/.ssh  # SSH 密钥目录
     environment:
       # 时区

@@ -6,8 +6,9 @@ A collection of Docker development environments including OpenClaw AI assistant 
 
 This repository contains multiple Docker-based development environments:
 
-1. **openclaw-dev-container** - Official OpenClaw development container with automatic configuration
-2. **fullstack-dev-ubuntu** - Universal fullstack development environment with modern toolchains
+1. **openclaw-dev-container** — OpenClaw AI assistant gateway with Feishu, Notion, and Tavily integrations
+2. **hermes-dev-container** — Hermes AI agent development environment with full toolchain
+3. **fullstack-dev-ubuntu** — Universal fullstack development environment with modern toolchains
 
 ---
 
@@ -76,6 +77,98 @@ curl http://localhost:18789/health
 # Check status
 docker-compose exec openclaw openclaw gateway status
 ```
+
+---
+
+### hermes-dev-container (Hermes AI Agent)
+
+A development environment for [Hermes Agent](https://github.com/NousResearch/hermes-agent) with a complete multi-language toolchain.
+
+#### Prerequisites
+
+- Docker (20.10+)
+- Docker Compose (2.0+)
+- Hermes Agent source code cloned locally
+
+#### 1. Get Source Code
+
+```bash
+git clone --depth 1 https://github.com/NousResearch/hermes-agent.git D:/Code/opensource/NousResearch/hermes-agent
+```
+
+#### 2. Configure Environment Variables
+
+```bash
+cd hermes-dev-container
+
+# Copy template
+cp .env.example .env
+
+# Edit .env and adjust paths
+vim .env
+```
+
+**Configuration**:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HERMES_SOURCE_PATH` | `D:/Code/opensource/NousResearch/hermes-agent` | Hermes source code path |
+| `HERMES_DATA_PATH` | `D:/Hermes` | Data directory (config, logs, sessions) |
+| `HERMES_GATEWAY_PORT` | `8301` | Gateway port |
+| `HERMES_DASHBOARD_PORT` | `9119` | Dashboard port |
+| `CODE_PATH` | `D:/Code` | Source code directory |
+| `SSH_PATH` | `$HOME/.ssh` | SSH keys directory |
+
+#### 3. Start Container
+
+```bash
+# Build and start
+./quick-start.sh --build
+
+# Start with specific version
+./quick-start.sh --version 2026.04.26
+
+# Force rebuild
+./quick-start.sh --build --version 2026.04.26
+
+# Show help
+./quick-start.sh --help
+```
+
+#### 4. Verify Startup
+
+```bash
+# View logs
+docker-compose logs -f hermes
+
+# Check status
+docker-compose ps
+
+# Enter container
+docker exec -it hermes-dev-container bash
+
+# Run hermes command (inside container)
+hermes --version
+```
+
+#### Volume Mappings
+
+| Host path | Container path | Purpose |
+|---|---|---|
+| `D:/Hermes` | `/opt/data` | Config, logs, sessions |
+| `D:/Code` | `/opt/data/workspace/code` | Source code |
+| `$HOME/.ssh` | `/root/.ssh` | SSH keys |
+
+#### Installed Tools
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Java (Azul Zulu JDK) | 25 | Enterprise backend |
+| Maven | 3.9.15 | Build management |
+| Python + uv | 3.13 | Runtime + package manager |
+| Node.js | 24.x | Frontend / Full-stack |
+| Rust | latest | Systems programming |
+| Go | 1.26.1 | Cloud-native tools |
 
 ---
 
@@ -194,25 +287,23 @@ dev-ocean-docker/
 ├── README.md                    # Main documentation (English)
 ├── README_zh.md                 # Chinese documentation
 ├── CHANGES.md                   # Changelog
-├── LEGACY_SCRIPTS.md            # Deprecated scripts documentation
+├── CLAUDE.md                    # Claude Code project instructions
 ├── openclaw-dev-container/      # OpenClaw Docker image
 │   ├── Dockerfile               # Image definition
 │   ├── docker-compose.yaml      # Service orchestration
 │   ├── entrypoint.sh            # Container startup script
 │   ├── .env.example             # Environment variables template
-│   ├── quick-start.sh           # One-click startup script
-│   ├── docker_run.sh            # Legacy script (deprecated)
-│   ├── docker_setup.sh          # Legacy script (deprecated)
-│   ├── settings.xml             # Maven configuration
-│   └── data/                    # Persistent data directory (auto-created)
+│   └── quick-start.sh           # One-click startup script
+├── hermes-dev-container/        # Hermes Agent Docker image
+│   ├── Dockerfile               # Image definition (extends Hermes source)
+│   ├── docker-compose.yaml      # Service orchestration
+│   ├── .env.example             # Environment variables template
+│   └── quick-start.sh           # One-click startup script
 ├── fullstack-dev-ubuntu/        # Fullstack development environment
 │   ├── Dockerfile               # Image definition
-│   ├── run.sh                   # Build script
-│   └── settings.xml             # Maven configuration (Aliyun mirrors)
-├── local_test/                  # Local test scripts and data
-│   └── (test scripts, logs, image backups)
+│   └── run.sh                   # Build script
 ├── .gitignore
-└── docker-registry.json
+└── .claude/                     # Claude Code config
 ```
 
 ---

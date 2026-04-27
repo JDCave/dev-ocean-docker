@@ -13,7 +13,7 @@ services:
       # Hermes 数据目录（配置、日志、会话等）
       - ${HERMES_DATA_PATH:-D:/Hermes}:/opt/data
       # 用户自定义映射
-      - ${CODE_PATH:-D:/Code}:/workspace/code  # 代码目录
+      - ${CODE_PATH:-D:/Code}:/opt/data/workspace/code  # 代码目录
       - ${SSH_PATH:-$HOME/.ssh}:/root/.ssh  # SSH 密钥目录
     environment:
       # 时区
@@ -23,6 +23,6 @@ services:
       - HERMES_UID=${HERMES_UID:-10000}
       - HERMES_GID=${HERMES_GID:-10000}
 
-    # 使用 Hermes 官方 entrypoint（gosu + tini）
-    entrypoint: ["/usr/bin/tini", "-g", "--", "/opt/hermes/docker/entrypoint.sh"]
+    # Dev entrypoint (runs as root, skips gosu for Windows NTFS compatibility)
+    entrypoint: ["/usr/bin/tini", "-g", "--", "/usr/local/bin/dev-entrypoint.sh"]
     command: ["gateway", "run"]

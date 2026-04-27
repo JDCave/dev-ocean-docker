@@ -72,7 +72,13 @@ RUN npm install --prefer-offline --no-audit && \
 COPY --chown=hermes:hermes . .
 
 # Fix CRLF line endings from Windows host
-RUN sed -i 's/\r$//' docker/entrypoint.sh
+# Fix chown/chmod on Windows-mounted volumes (NTFS doesn't support POSIX ownership)
+RUN sed -i 's/\r$//' docker/entrypoint.sh && \
+        sed -i '/chown hermes:hermes.*config\.yaml/s/chown/chown -f/' docker/entrypoint.sh && \
+        sed -i '/chmod 640.*config\.yaml/s/chmod/chmod -f/' docker/entrypoint.sh
+
+# Dev container entrypoint (runs as root — skips gosu for Windows NTFS compatibility)
+RUN printf '#!/bin/bash\nset -e\nHERMES_HOME="${HERMES_HOME:-/opt/data}"\nINSTALL_DIR="/opt/hermes"\nsource "${INSTALL_DIR}/.venv/bin/activate"\nmkdir -p "$HERMES_HOME"/{cron,sessions,logs,hooks,memories,skills,skins,plans,workspace,home}\n[ ! -f "$HERMES_HOME/.env" ] && cp "$INSTALL_DIR/.env.example" "$HERMES_HOME/.env"\n[ ! -f "$HERMES_HOME/config.yaml" ] && cp "$INSTALL_DIR/cli-config.yaml.example" "$HERMES_HOME/config.yaml"\n[ ! -f "$HERMES_HOME/SOUL.md" ] && cp "$INSTALL_DIR/docker/SOUL.md" "$HERMES_HOME/SOUL.md"\n[ -d "$INSTALL_DIR/skills" ] && python3 "$INSTALL_DIR/tools/skills_sync.py" 2>/dev/null || true\nif [ $# -gt 0 ] && command -v "$1" >/dev/null 2>&1; then exec "$@"; fi\nexec hermes "$@"\n' > /usr/local/bin/dev-entrypoint.sh && chmod +x /usr/local/bin/dev-entrypoint.sh
 
 # Build web dashboard (Vite outputs to hermes_cli/web_dist/)
 RUN cd web && npm run build
@@ -246,10 +252,10 @@ RUN uv venv && \
 # ---------- Runtime ----------
 ENV HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist
 ENV HERMES_HOME=/opt/data
-ENV PATH="/opt/data/.local/bin:${PATH}"
+ENV PATH="/opt/hermes/.venv/bin:/opt/data/.local/bin:${PATH}"
 
 VOLUME [ "/opt/data" ]
-ENTRYPOINT [ "/usr/bin/tini", "-g", "--", "/opt/hermes/docker/entrypoint.sh" ]
+ENTRYPOINT [ "/usr/bin/tini", "-g", "--", "/usr/local/bin/dev-entrypoint.sh" ]
 
 # ---------- Verify installations ----------
 RUN echo "=== Tool Versions ===" && \

@@ -6,8 +6,9 @@ Docker 开发环境集合，包括 OpenClaw AI 助手部署和全栈开发工具
 
 本仓库包含多个基于 Docker 的开发环境：
 
-1. **openclaw-dev-container** - OpenClaw 官方开发容器，支持自动配置
-2. **fullstack-dev-ubuntu** - 通用全栈开发环境，提供现代化工具链
+1. **openclaw-dev-container** — OpenClaw AI 助手网关，支持飞书、Notion 等集成
+2. **hermes-dev-container** — Hermes AI Agent 开发环境，内置完整工具链
+3. **fullstack-dev-ubuntu** — 通用全栈开发环境，提供现代化工具链
 
 ---
 
@@ -76,6 +77,98 @@ curl http://localhost:18789/health
 # 查看状态
 docker-compose exec openclaw openclaw gateway status
 ```
+
+---
+
+### hermes-dev-container (Hermes AI Agent)
+
+基于 [Hermes Agent](https://github.com/NousResearch/hermes-agent) 的开发环境，内置完整多语言工具链。
+
+#### 前置要求
+
+- Docker (20.10+)
+- Docker Compose (2.0+)
+- 本地已克隆 Hermes Agent 源码
+
+#### 1. 获取源码
+
+```bash
+git clone --depth 1 https://github.com/NousResearch/hermes-agent.git D:/Code/opensource/NousResearch/hermes-agent
+```
+
+#### 2. 配置环境变量
+
+```bash
+cd hermes-dev-container
+
+# 复制模板
+cp .env.example .env
+
+# 编辑 .env，调整路径配置
+vim .env
+```
+
+**配置项**:
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `HERMES_SOURCE_PATH` | `D:/Code/opensource/NousResearch/hermes-agent` | Hermes 源码路径 |
+| `HERMES_DATA_PATH` | `D:/Hermes` | 数据目录（配置、日志、会话） |
+| `HERMES_GATEWAY_PORT` | `8301` | Gateway 端口 |
+| `HERMES_DASHBOARD_PORT` | `9119` | Dashboard 端口 |
+| `CODE_PATH` | `D:/Code` | 代码目录 |
+| `SSH_PATH` | `$HOME/.ssh` | SSH 密钥目录 |
+
+#### 3. 启动容器
+
+```bash
+# 构建并启动
+./quick-start.sh --build
+
+# 使用特定版本
+./quick-start.sh --version 2026.04.26
+
+# 强制重建
+./quick-start.sh --build --version 2026.04.26
+
+# 查看帮助
+./quick-start.sh --help
+```
+
+#### 4. 验证启动
+
+```bash
+# 查看日志
+docker-compose logs -f hermes
+
+# 检查状态
+docker-compose ps
+
+# 进入容器
+docker exec -it hermes-dev-container bash
+
+# 运行 hermes 命令（容器内）
+hermes --version
+```
+
+#### 卷映射
+
+| 本机路径 | 容器路径 | 用途 |
+|----------|----------|------|
+| `D:/Hermes` | `/opt/data` | 配置、日志、会话 |
+| `D:/Code` | `/opt/data/workspace/code` | 源代码 |
+| `$HOME/.ssh` | `/root/.ssh` | SSH 密钥 |
+
+#### 已安装工具
+
+| 工具 | 版本 | 用途 |
+|------|------|------|
+| Java (Azul Zulu JDK) | 25 | 企业级后端开发 |
+| Maven | 3.9.15 | 构建管理 |
+| Python + uv | 3.13 | 运行时 + 包管理 |
+| Node.js | 24.x | 前端 / 全栈开发 |
+| Rust | latest | 系统编程 |
+| Go | 1.26.1 | 云原生工具 |
 
 ---
 
@@ -191,28 +284,26 @@ npm start
 
 ```
 dev-ocean-docker/
-├── README.md                    # 主文档（中文）
-├── README_en.md                 # 英文文档
+├── README.md                    # 主文档（英文）
+├── README_zh.md                 # 中文文档
 ├── CHANGES.md                   # 更新日志
-├── LEGACY_SCRIPTS.md            # 废弃脚本说明
+├── CLAUDE.md                    # Claude Code 项目说明
 ├── openclaw-dev-container/      # OpenClaw Docker 镜像目录
 │   ├── Dockerfile               # 镜像定义
 │   ├── docker-compose.yaml      # 服务编排
 │   ├── entrypoint.sh            # 容器启动脚本
 │   ├── .env.example             # 环境变量模板
-│   ├── quick-start.sh           # 一键启动脚本
-│   ├── docker_run.sh            # 遗留脚本（废弃）
-│   ├── docker_setup.sh          # 遗留脚本（废弃）
-│   ├── settings.xml             # Maven 配置
-│   └── data/                    # 持久化数据目录（自动创建）
+│   └── quick-start.sh           # 一键启动脚本
+├── hermes-dev-container/        # Hermes Agent Docker 镜像目录
+│   ├── Dockerfile               # 镜像定义（基于 Hermes 源码扩展）
+│   ├── docker-compose.yaml      # 服务编排
+│   ├── .env.example             # 环境变量模板
+│   └── quick-start.sh           # 一键启动脚本
 ├── fullstack-dev-ubuntu/        # 全栈开发环境
 │   ├── Dockerfile               # 镜像定义
-│   ├── run.sh                   # 构建脚本
-│   └── settings.xml             # Maven 配置（阿里云镜像）
-├── local_test/                  # 本地测试脚本和数据
-│   └── (测试脚本、日志、镜像备份)
+│   └── run.sh                   # 构建脚本
 ├── .gitignore
-└── docker-registry.json
+└── .claude/                     # Claude Code 配置
 ```
 
 ---

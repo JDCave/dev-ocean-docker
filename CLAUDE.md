@@ -65,7 +65,7 @@ docker run -it -v "$HOME/code:/workspace/code" fullstack-dev-env:v1.0.1
 | Host path (env var) | Container path | Purpose |
 |---|---|---|
 | `${OPENCLAW_CONFIG_PATH:-D:/OpenClaw}` | `/root/.openclaw` | Config, workspace, logs |
-| `${CODE_PATH:-D:/Code}` | `/workspace/code` | Source code |
+| `${CODE_PATH:-D:/Code}` | `/root/.openclaw/workspace/code` | Source code |
 | `${SSH_PATH:-$HOME/.ssh}` | `/root/.ssh` | SSH keys for git |
 
 ### Version Management
